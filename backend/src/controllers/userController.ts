@@ -51,7 +51,6 @@ const signup = async (req : Request, res : Response) => {
     }
 }
 
-
 const allproduct = async (req : Request, res : Response) => {
     try {
         const products = await prisma.product.findMany({})
@@ -205,7 +204,183 @@ const viewWishlist = async (req : Request, res : Response) => {
     }
 }
 
+const deleteCart = async (req : Request, res : Response) => {
+    const { id }: any = req.params;
+    const { userId }: any = req.body; 
+    try {
+        const delProduct = await prisma.cart.update({
+            where: {
+                userId
+            },
+            data: {
+                products: {
+                    disconnect: {
+                        id
+                    }
+                }
+            }
+        });
+        // console.log(delProduct);
+        return res.json("Product has been Deleted");
+    } catch (e) {
+        return res.json("UserId doesn't match");
+    }
+}
 
+const deleteWishlist = async (req: Request, res: Response) => {
+    const { id }: any = req.params;
+    const { userId }: any = req.body; 
+    try {
+        const updatedWishlist = await prisma.wishlist.update({
+            where: {
+                userId,
+            },
+            data: {
+                products: {
+                    disconnect: {
+                        id
+                    }
+                }
+            }
+        });
+        // console.log(updatedWishlist);
+        return res.json("Product has been Deleted from Wishlist");
+    } catch (e) {
+        return res.json("UserId doesn't match or Product not found");
+    }
+}
+
+const saveLater = async (req: Request, res: Response) => {
+    const { id }: any = req.params; 
+    const { userId }: any = req.body;
+    
+    try {
+        const cartItem = await prisma.cart.findFirst({
+            where: {
+                userId,
+                products: {
+                    some: {
+                        id
+                    }
+                }
+            },
+            include: {
+                products: true
+            }
+        });
+
+        if (!cartItem) {
+            return res.status(404).json({ error: "Product not found in cart." });
+        }
+
+        const productToMove = cartItem.products.find((p: any) => p.id == id);
+
+        if (!productToMove) {
+            return res.status(404).json({ error: "Product not found in cart." });
+        }
+
+        await prisma.wishlist.upsert({
+            where: { userId },
+            update: {
+                products: {
+                    connect: {
+                        id: productToMove.id
+                    }
+                }
+            },
+            create: {
+                userId,
+                products: {
+                    connect: {
+                        id: productToMove.id
+                    }
+                }
+            }
+        });
+
+        await prisma.cart.update({
+            where: {
+                id: cartItem.id,
+            },
+            data: {
+                products: {
+                    disconnect: { id: productToMove.id }
+                }
+            }
+        });
+
+        return res.json({ message: "Product has been moved to Wishlist and removed from Cart" });
+    } catch (e) {
+        console.error("Error moving product:", e);
+        return res.status(500).json({ error: "An error occurred while moving the product" });
+    }
+}
+  
+const addToCart = async (req: Request, res: Response) => {
+    const { id }: any = req.params; 
+    const { userId }: any = req.body;
+    
+    try {
+        const cartItem = await prisma.wishlist.findFirst({
+            where: {
+                userId,
+                products: {
+                    some: {
+                        id
+                    }
+                }
+            },
+            include: {
+                products: true
+            }
+        });
+
+        if (!cartItem) {
+            return res.status(404).json({ error: "Product not found in cart." });
+        }
+
+        const productToMove = cartItem.products.find((p: any) => p.id == id);
+
+        if (!productToMove) {
+            return res.status(404).json({ error: "Product not found in wishlist." });
+        }
+
+        await prisma.cart.upsert({
+            where: { userId },
+            update: {
+                products: {
+                    connect: {
+                        id: productToMove.id
+                    }
+                }
+            },
+            create: {
+                userId,
+                products: {
+                    connect: {
+                        id: productToMove.id
+                    }
+                }
+            }
+        });
+
+        await prisma.wishlist.update({
+            where: {
+                id: cartItem.id,
+            },
+            data: {
+                products: {
+                    disconnect: { id: productToMove.id }
+                }
+            }
+        });
+
+        return res.json({ message: "Product has been moved to Cart and removed from Wishlist" });
+    } catch (e) {
+        console.error("Error moving product:", e);
+        return res.status(500).json({ error: "An error occurred while moving the product" });
+    }
+}
 
 
 export {
@@ -218,5 +393,9 @@ export {
     createOrder,
     viewOrders,
     createWishlist,
-    viewWishlist
+    viewWishlist,
+    deleteCart,
+    deleteWishlist,
+    saveLater,
+    addToCart
 }
