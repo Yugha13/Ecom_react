@@ -14,7 +14,7 @@ const userMiddleware = async (req : Request, res : Response, next : NextFunction
             where : {id}
         });
         if(!isUser) throw new Error("not found");
-        req.body.id = isUser.id;
+        req.body.userId = isUser.id;
         next();
     } catch (e) {
         return res.json({msg : "User Verification Failed. Try to Login again."})

@@ -1,13 +1,11 @@
-import { useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { BatteryIcon, CpuIcon, DiscIcon, StarIcon } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { useState } from "react";
+import { Button } from "../components/ui/button";
+import { CpuIcon, BatteryIcon, DiscIcon, StarIcon } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import Navbar from "@/Navbar/Navbar";
 
-export default function ProductDetails() {
-  const location = useLocation();
-  const { name, price, imageUrl } = location.state || { name: "Product Name", price: "N/A", imageUrl: "/placeholder.svg" };
-  
+
+export default function ElectronicsProductDetails({ hideLearnMore, info }: { hideLearnMore?: boolean, info:any }) {
   const [showMore, setShowMore] = useState(false);
 
   const handleLearnMore = () => {
@@ -16,11 +14,12 @@ export default function ProductDetails() {
 
   return (
     <div className="bg-background text-foreground">
+      <Navbar/>
       <section className="container mx-auto py-12 md:py-20 grid md:grid-cols-2 gap-8 items-center">
         <div>
           <img
-            src={imageUrl}
-            alt={name}
+            src={info.imageUrl || "/placeholder.svg"}
+            alt={info.name}
             width={600}
             height={600}
             className="w-full rounded-lg"
@@ -28,18 +27,21 @@ export default function ProductDetails() {
           />
         </div>
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold">{name}</h1>
+          <h1 className="text-4xl font-bold">{info.name}</h1>
           <p className="text-muted-foreground">
-            Experience unparalleled performance and portability with the {name}. Crafted with premium materials and
-            packed with cutting-edge technology, this product is the ultimate companion for work, play, and
-            everything in between.
+            Experience unparalleled performance and portability with the {info.name}.
           </p>
-          <p className="text-xl font-bold">Price: {price}</p>
+          <p className="text-xl font-bold">Price: {info.price}</p>
+          <p>Additional Info: {info.name}</p>
           <div className="flex items-center gap-4">
-            <Button size="lg">Buy Now</Button>
-            <button onClick={handleLearnMore} className="text-primary hover:underline">
-              {showMore ? "Show Less" : "Learn More"}
-            </button>
+            <Button className="bg-yellow-500 hover:bg-yellow-600" size="lg">Add to Cart</Button>
+            {
+              !hideLearnMore && (
+                <button onClick={handleLearnMore} className="text-primary hover:underline">
+                  {showMore ? "Show Less" : "Learn More"}
+                </button>
+              )
+            }
           </div>
         </div>
       </section>

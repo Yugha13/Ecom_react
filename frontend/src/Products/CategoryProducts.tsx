@@ -25,13 +25,13 @@ export default function CategoryPage() {
       }
     })();
   }, []);
-
-  const handleQuickView = (product: any) => {
-    navigate(`/product/${product.name}`, {
+  const handleQuickView = (product: { id:string, name: string; price: number; imageUrl: string; category: string }) => {
+    navigate(`/product/${(product.id)}`, {
       state: {
         name: product.name,
         price: product.price,
         imageUrl: product.imageUrl,
+        category: product.category
       },
     });
   };
@@ -53,7 +53,7 @@ export default function CategoryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col">
-      <Toaster />  {/* This is required to display the toast notifications */}
+      <Toaster /> 
       <Navbar />
       <main className="flex-grow">
         <section className="py-16 bg-white">

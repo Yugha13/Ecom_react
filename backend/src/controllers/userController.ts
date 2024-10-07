@@ -6,23 +6,25 @@ import jwt from "jsonwebtoken"
 const prisma = new PrismaClient();
 
 const login = async (req : Request, res : Response) => {
-    const { email } = req.body;
+    const { email, password } = req.body;
     const isVer = userModel.safeParse({ email });
-    // console.log(isVer);
+    // console.log(isVer.error);
     if(!isVer.success) return res.json({ msg: "Provided input is invalid" });
-
+    
     try {
-        const isUser = await prisma.user.findFirst({
+        // console.log(email);
+        const isUser = await prisma.user.findUnique({
             where : {
-                email
+                email,
+                password
             }
         })
-        // console.log(user);
+        // console.log(isUser);
         if(!isUser) return res.status(401).json({mes : "Invalid Credentials"});
         //user details are verified
         const token = jwt.sign({id : isUser.id},process.env.SECRET_KEY as string);
         res.cookie("token", token);
-        return res.json("User Logged in");
+        return res.json({user : isUser});
     } catch (e) {
         return res.status(401).json({mes : "User not found"});
     }
@@ -31,7 +33,7 @@ const login = async (req : Request, res : Response) => {
 const signup = async (req : Request, res : Response) => {
     const { email, password, name }: any = req.body; 
     const isVer = userModel.safeParse({ email, password, name });
-    console.log(isVer);
+    // console.log(isVer);
     if (!isVer.success) return res.json({ msg: "Provided input is invalid" });
     try {
         const user = await prisma.user.create({
@@ -63,11 +65,12 @@ const allproduct = async (req : Request, res : Response) => {
 
 const productId = async (req : Request, res : Response) => {
     const { id }:any = req.params;
-    // console.log(id);
+    console.log(id);
     try {
         const product = await prisma.product.findFirst({
             where : { id }
         });
+        console.log(product);
         return res.json({details : product});
     } catch (e) {
         return res.json("product code is wrong");
@@ -76,32 +79,45 @@ const productId = async (req : Request, res : Response) => {
 
 const createCart = async (req : Request, res : Response) => {
     const { id }:any = req.params;
-    const { productId, quantity, userId }: any = req.body; 
+    const { userId }: any = req.body; 
     try {
-        const product = await prisma.cart.create({
-            data : {
-                productId : productId || id,
-                quantity : quantity || "1",
-                userId
+        const cart = await prisma.cart.create({
+            data: {
+                userId,
             }
         });
-        // console.log(product);
-        return res.json("Added to Cart");
     } catch (e) {
-        return res.json("product code is wrong");
+        //pass
     }
+    const updatedCart = await prisma.cart.update({
+        where: {
+            userId
+        },
+        data: {
+            products: {
+                connect: {
+                    id
+                }
+            }
+        }
+    });
+    // console.log(product);
+    return res.json({mes: "new product created", updatedCart});
 }
 
 const viewCart = async (req : Request, res : Response) => {
     const { userId } = req.body;
     try {
-        const products = await prisma.cart.findMany({
+        const product = await prisma.cart.findMany({
             where : {
                 userId
+            },
+            include : {
+                products : true
             }
         })
         // console.log(products);
-        return res.json({Cart : products});
+        return res.json({Cart : product});
     } catch (e) {
         // console.log(e);
         return res.status(404).json(e);
@@ -109,14 +125,17 @@ const viewCart = async (req : Request, res : Response) => {
 }
 
 const createOrder = async (req : Request, res : Response) => {
-    const { productId, totalAmount, quantity, userId }: any = req.body; 
+    const { productId, totalAmount, userId }: any = req.body; 
     try {
         const product = await prisma.order.create({
-            data : {
-                totalAmount,
-                quantity,
+            data: {
                 userId,
-                productId
+                totalAmount,
+                product : {
+                    connect: {
+                        id: productId
+                    }
+                }
             }
         });
         // console.log(product);
@@ -144,19 +163,31 @@ const viewOrders = async (req : Request, res : Response) => {
 }
 
 const createWishlist = async (req : Request, res : Response) => {
-    const { productId, userId }: any = req.body; 
+    const {id}:any = req.params;
+    const { userId }: any = req.body; 
     try {
-        const product = await prisma.wishlist.create({
+        await prisma.wishlist.create({
             data : {
-                productId,
                 userId
             }
-        });
-        // console.log(product);
-        return res.json("Added to wishlist");
+        })
     } catch (e) {
-        return res.json("product code is wrong");
+        //pass
     }
+    const updatedlist = await prisma.wishlist.update({
+        where : {
+            userId
+        },
+        data : {
+            products : {
+                connect : {
+                    id
+                }
+            }
+        }
+    });
+    console.log(updatedlist);
+    return res.json("wishlist Updated");
 }
 
 const viewWishlist = async (req : Request, res : Response) => {
@@ -168,7 +199,7 @@ const viewWishlist = async (req : Request, res : Response) => {
             }
         });
         // console.log(product);
-        return res.json("products in wishlist");
+        return res.json({products : product});
     } catch (e) {
         return res.json("UserId doesn't match");
     }

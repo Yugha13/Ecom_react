@@ -8,32 +8,32 @@ datasource db {
 }
 
 model User {
-  id        String     @id  @default(uuid())
-  email     String     @unique
+  id        String    @id @default(uuid())
+  email     String    @unique
   password  String
   name      String?
   phone     String?  
   address   String?
-  orders    Order[]  
-  wishlist  Wishlist[] 
-  cart      Cart[]     
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  orders    Order[]   
+  wishlist  Wishlist?
+  cart      Cart?    
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Product {
-  id          String     @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   description String
   price       Float
   stock       Int
   imageUrl    String?
   category    String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orders      Order[]   
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  orders      Order[]
   wishlist    Wishlist[] 
-  cart        Cart[]     
+  cart        Cart[]   
 }
 
 model Admin {
@@ -46,35 +46,30 @@ model Admin {
 }
 
 model Order {
-  id          String    @id @default(uuid())
+  id          String   @id @default(uuid())
   userId      String
-  productId   String
-  quantity    Int
   totalAmount Float
   status      String   @default("pending")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  user        User      @relation(fields: [userId], references: [id])
-  product     Product   @relation(fields: [productId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+  product     Product[]
 }
 
 model Wishlist {
   id        String   @id @default(uuid())
-  userId    String
-  productId String
+  userId    String   @unique 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
+  products  Product[] 
 }
 
 model Cart {
   id          String   @id @default(uuid())
-  userId      String
-  productId   String
-  quantity    Int      @default(1)
+  userId      String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id])
-  product     Product  @relation(fields: [productId], references: [id])
+  products    Product[]
 }

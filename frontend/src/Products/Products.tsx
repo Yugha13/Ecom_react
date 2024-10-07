@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 import Navbar from '../Navbar/Navbar';
 import { useEffect, useState } from 'react';
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
 import { BASEURL } from "../../BaseUrl";
+import { useNavigate } from 'react-router-dom';
 
 const categories = [
   { name: 'All', icon: '📦', link: '/category/all' },
@@ -17,28 +17,33 @@ const categories = [
   { name: 'Sports', icon: '⚽', link: '/category/sports' },
   { name: 'Books', icon: '📚', link: '/category/books' },
   { name: 'Toys', icon: '🧸', link: '/category/toys' },
-  { name: 'Home', icon: '🏠', link: '/' },
+  { name: 'Home', icon: '🏠', link: '/' }
 ];
 
 export default function Products() {
   const navigate = useNavigate();
   const [info, setInfo] = useState<any[]>([]); 
+
   useEffect(() => {
-    (async () => {
+    const fetchProducts = async () => {
       try {
         const { data } = await axios.get(`${BASEURL}/products`);
         setInfo(data.allproduct || []);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
-    })();
+    };
+    fetchProducts();
   }, []);
+
   const handleQuickView = (product: any) => {
-    navigate(`/product/${product.name}`, {
+    navigate(`/product/${product.id}`, {
       state: {
+        id: product.id,
         name: product.name,
         price: product.price,
         imageUrl: product.imageUrl,
+        category: product.category
       },
     });
   };
@@ -69,12 +74,12 @@ export default function Products() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-8">Featured Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {info.slice(0,12).map((product) => (
-                <Card key={product.name} className="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-102 group">
+              {info.slice(0, 12).map((product) => (
+                <Card key={product.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-102 group">
                   <div className="relative overflow-hidden">
                     <img src={product.imageUrl} alt={product.name} className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-110" />
                     <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button
+                      <Button
                         variant="secondary"
                         size="sm"
                         onClick={() => handleQuickView(product)}
@@ -84,18 +89,18 @@ export default function Products() {
                     </div>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors duration-300">{product.name}</h3>
-                    <p className="text-indigo-600 font-bold mb-2">Price: {product.price}</p>
+                    <h3 className="text-lg font-semibold text-gray-600 mb-1">{product.name}</h3>
+                    <p className="text-yellow-600 font-bold mb-2 group-hover:text-yellow-700 transition-colors duration-300">Price: {product.price}</p>
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-4 h-4 ${i < Math.floor(4) ? 'text-yellow-400' : 'text-gray-300'} transition-colors duration-300`}
+                          className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'} transition-colors duration-300`}
                         />
                       ))}
-                      <span className="ml-2 text-sm text-gray-600">4</span>
+                      <span className="ml-2 text-sm">{product.rating}</span>
                     </div>
-                    <Button className="w-full mt-4" variant="default">
+                    <Button className="w-full mt-4 bg-yellow-600 mb-1 group-hover:bg-yellow-700 transition-colors duration-300" variant="default">
                       Add to Cart
                       <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </Button>
