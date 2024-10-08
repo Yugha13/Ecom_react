@@ -16,6 +16,8 @@ import {
 } from '../controllers/userController';
 import userMiddleware from '../middleware/userMiddleware';
 
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 const userRouter = Router();
 
@@ -38,9 +40,19 @@ userRouter.post("/delcart/:id", userMiddleware as any, deleteCart as any );
 userRouter.post("/savelater/:id", userMiddleware as any, saveLater as any );
 userRouter.post("/addcart/:id", userMiddleware as any, addToCart as any );
 
-userRouter.get("/cart/order", userMiddleware as any, createOrder as any );
+userRouter.post("/cart/order", userMiddleware as any, createOrder as any );
 userRouter.get("/history", userMiddleware as any, viewOrders as any );
 
+const check = async ( req:any, res:any ) => {
+    const {id} = req.body;
+    const user = await prisma.user.findFirst({
+        where : {
+            id
+        }
+    })
+    return res.json({user})
+}
 
+userRouter.get("/usercheck", userMiddleware as any, check )
 
 export default userRouter;

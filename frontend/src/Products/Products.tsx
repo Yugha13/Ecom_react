@@ -8,6 +8,10 @@ import { useEffect, useState } from 'react';
 import axios from "axios";
 import { BASEURL } from "../../BaseUrl";
 import { useNavigate } from 'react-router-dom';
+import { useToast } from "@/hooks/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+
+
 
 const categories = [
   { name: 'All', icon: '📦', link: '/category/all' },
@@ -22,6 +26,7 @@ const categories = [
 
 export default function Products() {
   const navigate = useNavigate();
+  const { toast } = useToast()
   const [info, setInfo] = useState<any[]>([]); 
 
   useEffect(() => {
@@ -100,7 +105,19 @@ export default function Products() {
                       ))}
                       <span className="ml-2 text-sm">{product.rating}</span>
                     </div>
-                    <Button className="w-full mt-4 bg-yellow-600 mb-1 group-hover:bg-yellow-700 transition-colors duration-300" variant="default">
+                    <Button 
+                      className="w-full mt-4 bg-yellow-600 mb-1 group-hover:bg-yellow-700 transition-colors duration-300" 
+                      variant="default"
+                      onClick={() => {
+                        toast({
+                          title: `${product.name}`,
+                          description: "has been added to Cart.",
+                          action: (
+                            <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+                          ),
+                        })
+                      }}
+                    >
                       Add to Cart
                       <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
                     </Button>

@@ -29,6 +29,7 @@ model Product {
   stock       Int
   imageUrl    String?
   category    String
+  quantity    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   orders      Order[]

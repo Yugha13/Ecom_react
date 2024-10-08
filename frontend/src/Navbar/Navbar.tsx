@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
 import { Heart, LogOut, Mail, Search, ShoppingCart, User } from 'lucide-react';
-import axios from 'axios';
-import { BASEURL } from "../../BaseUrl";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,25 +10,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Link, useNavigate } from 'react-router-dom';
+import useStore  from "../store/userState"
 
 const Navbar = () => {
-    const [info, setInfo] = useState({} as any);
-    const [user, setUser] = useState<{ email?: string }>({});
-    const isAuthenticated = !!user.email;
+    const { logout, data } = useStore();
     const navigate = useNavigate();
-
-    useEffect(() => {
-        (async () => {
-            if (user.email) {
-                const { data } = await axios.post(`${BASEURL}/login`, { email: user.email });
-                setInfo(data.user);
-            }
-        })();
-    }, [user.email]);
-
+    // console.log("in nav data - ",data);
+    
     const handleLogout = () => {
-        setUser({});
-        navigate('/login');
+        logout();
+        navigate('/');
     };
 
     return (
@@ -40,7 +29,9 @@ const Navbar = () => {
                     <div className="flex justify-between h-16">
                         <div className="flex">
                             <div className="flex-shrink-0 flex items-center">
+                            <Link to='/'>
                                 <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-yellow-500">Neo Shop</span>
+                            </Link>
                             </div>
                         </div>
 
@@ -49,11 +40,13 @@ const Navbar = () => {
                                 <Search className="h-6 w-6" />
                             </button>
 
-                            {isAuthenticated ? (
+                            {data ? (
                                 <div>
+                                    <Link to='/cart'>
                                     <button className="ml-4 p-2 rounded-full text-gray-500 hover:text-gray-600 focus:outline-none transition-colors duration-300">
                                         <ShoppingCart className="h-6 w-6" />
                                     </button>
+                                    </Link>
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
                                             <button className="ml-4 p-2 rounded-full text-gray-500 hover:text-gray-600 focus:outline-none transition-colors duration-300">
@@ -66,11 +59,11 @@ const Navbar = () => {
                                             <DropdownMenuGroup>
                                                 <DropdownMenuItem className="hover:bg-gray-100 transition-colors duration-300">
                                                     <User className="mr-2 h-4 w-4" />
-                                                    <span>{info?.name}</span>
+                                                    <span>{data?.name}</span>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="hover:bg-gray-100 transition-colors duration-300">
                                                     <Mail className="mr-2 h-4 w-4" />
-                                                    <span>{info?.email}</span>
+                                                    <span>{data?.email}</span>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem className="hover:bg-gray-100 transition-colors duration-300">
                                                     <Heart className="mr-2 h-4 w-4 fill-red-500 text-red-500" />

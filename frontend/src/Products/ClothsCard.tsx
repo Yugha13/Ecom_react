@@ -64,7 +64,7 @@ export default function ClothsCard() {
               <div className="text-4xl font-bold">Price: {price}</div>
             </div>
           </div>
-          <form className="grid gap-4 md:gap-10">
+          <form className="grid gap-4 md:gap-10" onSubmit={(e) => {e.preventDefault()}}>
             <div className="grid gap-2">
               <Label htmlFor="color" className="text-base">Color</Label>
               <RadioGroup id="color" defaultValue="black" className="flex items-center gap-2">

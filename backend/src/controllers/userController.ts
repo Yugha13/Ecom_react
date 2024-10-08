@@ -64,12 +64,12 @@ const allproduct = async (req : Request, res : Response) => {
 
 const productId = async (req : Request, res : Response) => {
     const { id }:any = req.params;
-    console.log(id);
+    // console.log(id);
     try {
         const product = await prisma.product.findFirst({
             where : { id }
         });
-        console.log(product);
+        // console.log(product);
         return res.json({details : product});
     } catch (e) {
         return res.json("product code is wrong");
@@ -124,23 +124,30 @@ const viewCart = async (req : Request, res : Response) => {
 }
 
 const createOrder = async (req : Request, res : Response) => {
-    const { productId, totalAmount, userId }: any = req.body; 
+    const {userId, totalAmount, ids} = req.body;
+    // console.log(ids);
+    
     try {
-        const product = await prisma.order.create({
-            data: {
-                userId,
+        const orders = await prisma.order.create({
+            data : {
+                user: {
+                    connect: {id:userId}
+                },
                 totalAmount,
                 product : {
-                    connect: {
-                        id: productId
-                    }
+                    connect: ids.map((i:any) => ({id: i}))
                 }
+            },
+        })
+        await prisma.cart.deleteMany({
+            where : {
+                userId
             }
         });
-        // console.log(product);
-        return res.json("Order placed");
+        return res.status(200).json({orderPlaced : orders});
     } catch (e) {
-        return res.json("product code is wrong");
+        console.log(e);
+        return res.status(404).json(e);
     }
 }
 
@@ -185,7 +192,7 @@ const createWishlist = async (req : Request, res : Response) => {
             }
         }
     });
-    console.log(updatedlist);
+    // console.log(updatedlist);
     return res.json("wishlist Updated");
 }
 

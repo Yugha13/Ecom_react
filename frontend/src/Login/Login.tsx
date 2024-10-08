@@ -7,8 +7,10 @@ import axios from "axios";
 import { BASEURL } from "../../BaseUrl";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import useUser from "@/store/userState";
 
 export default function Login() { 
+  const { data ,login } = useUser() as any
   const [isRegister, setIsRegister] = useState(false); 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,6 +19,7 @@ export default function Login() {
   const navigate = useNavigate(); 
 
   const handleAuth = async () => {
+
     try {
       let response;
       if (isRegister) {
@@ -30,10 +33,12 @@ export default function Login() {
         response = await axios.post(`${BASEURL}/login`, {
           email,
           password,
-        });
+        }, {withCredentials: true});
+
         toast.success("Successfully logged in!");
       }
       console.log("Response:", response.data);
+      login(response.data.user);
       navigate("/products");
     } catch (err) {
       setError("Email or Password is incorrect");
