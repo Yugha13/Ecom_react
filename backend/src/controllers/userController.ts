@@ -78,7 +78,9 @@ const productId = async (req : Request, res : Response) => {
 
 const createCart = async (req : Request, res : Response) => {
     const { id }:any = req.params;
-    const { userId }: any = req.body; 
+    const { userId }: any = req.body;
+    // console.log(id, userId);
+     
     try {
         const cart = await prisma.cart.create({
             data: {
@@ -202,6 +204,9 @@ const viewWishlist = async (req : Request, res : Response) => {
         const product = await prisma.wishlist.findMany({
             where : {
                 userId
+            },
+            include : {
+                products : true
             }
         });
         // console.log(product);
@@ -326,6 +331,7 @@ const saveLater = async (req: Request, res: Response) => {
 const addToCart = async (req: Request, res: Response) => {
     const { id }: any = req.params; 
     const { userId }: any = req.body;
+    console.log(id, userId);
     
     try {
         const cartItem = await prisma.wishlist.findFirst({

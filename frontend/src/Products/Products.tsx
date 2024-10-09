@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import axios from "axios";
 import { BASEURL } from "../../BaseUrl";
 import { useNavigate } from 'react-router-dom';
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/components/hooks/use-toast"
 import { ToastAction } from "@/components/ui/toast"
 
 
@@ -53,6 +53,22 @@ export default function Products() {
     });
   };
 
+  const handleCart = async ({id, name}:any) => {
+    try {
+      await axios.post(`${BASEURL}/product/${id}/cart`,{},{withCredentials : true});
+      // console.log(addedProduct);
+      toast({
+        title: `${name}`,
+        description: "has been added to Cart.",
+        action: (
+          <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+        ),
+      })
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col">
       <Navbar />
@@ -95,7 +111,7 @@ export default function Products() {
                   </div>
                   <CardContent className="p-4">
                     <h3 className="text-lg font-semibold text-gray-600 mb-1">{product.name}</h3>
-                    <p className="text-yellow-600 font-bold mb-2 group-hover:text-yellow-700 transition-colors duration-300">Price: {product.price}</p>
+                    <p className="text-yellow-600 font-bold mb-2 group-hover:text-yellow-700 transition-colors duration-300">Price: ₹{product.price}</p>
                     <div className="flex items-center">
                       {[...Array(5)].map((_, i) => (
                         <Star
@@ -108,15 +124,7 @@ export default function Products() {
                     <Button 
                       className="w-full mt-4 bg-yellow-600 mb-1 group-hover:bg-yellow-700 transition-colors duration-300" 
                       variant="default"
-                      onClick={() => {
-                        toast({
-                          title: `${product.name}`,
-                          description: "has been added to Cart.",
-                          action: (
-                            <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
-                          ),
-                        })
-                      }}
+                      onClick={() => handleCart({ id: product.id, name: product.name })}
                     >
                       Add to Cart
                       <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />

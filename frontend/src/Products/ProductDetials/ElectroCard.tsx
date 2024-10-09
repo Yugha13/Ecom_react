@@ -1,16 +1,39 @@
 import { useState } from "react";
-import { Button } from "../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { CpuIcon, BatteryIcon, DiscIcon, StarIcon } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import Navbar from "@/Navbar/Navbar";
+import axios from "axios";
+import { BASEURL } from "../../../BaseUrl";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/hooks/use-toast";
+
 
 
 export default function ElectronicsProductDetails({ hideLearnMore, info }: { hideLearnMore?: boolean, info:any }) {
-  const [showMore, setShowMore] = useState(false);
-
+  const [showMore, setShowMore] = useState(true);
+  const { toast } = useToast()
+  console.log("in electro - ", info);
+  console.log(info.id);
+  
   const handleLearnMore = () => {
     setShowMore(prev => !prev);
   };
+
+  const handleCart = async ({id, name}:any) => {    
+    try {
+      await axios.post(`${BASEURL}/product/${id}/cart`,{},{withCredentials : true});
+      toast({
+        title: `${name}`,
+        description: "has been added to Cart.",
+        action: (
+          <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+        ),
+      })
+    } catch (e) {
+      // console.log(e);
+    }
+  }
 
   return (
     <div className="bg-background text-foreground">
@@ -34,7 +57,12 @@ export default function ElectronicsProductDetails({ hideLearnMore, info }: { hid
           <p className="text-xl font-bold">Price: {info.price}</p>
           <p>Additional Info: {info.name}</p>
           <div className="flex items-center gap-4">
-            <Button className="bg-yellow-500 hover:bg-yellow-600" size="lg">Add to Cart</Button>
+            <Button 
+              className="bg-yellow-500 hover:bg-yellow-600" 
+              size="lg"
+              onClick={() => handleCart({ id: info.id, name: info.name })}>
+                Add to Cart
+              </Button>
             {
               !hideLearnMore && (
                 <button onClick={handleLearnMore} className="text-primary hover:underline">
@@ -42,6 +70,7 @@ export default function ElectronicsProductDetails({ hideLearnMore, info }: { hid
                 </button>
               )
             }
+            
           </div>
         </div>
       </section>

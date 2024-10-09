@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 const userMiddleware = async (req : Request, res : Response, next : NextFunction) => {
     const {token} = req.cookies;
-    console.log(token, "token");
+    // console.log(token, "token");
 
     if(!token) return res.status(400).json({mes: "this"})
     try {

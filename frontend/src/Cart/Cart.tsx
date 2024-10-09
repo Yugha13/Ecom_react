@@ -72,16 +72,16 @@ const Cart = () => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span>Subtotal</span>
-                    <span className="font-medium">Rs {subtotal}</span>
+                    <span className="font-medium"> ₹{subtotal}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>Shipping</span>
-                    <span className="font-medium">Rs 50</span>
+                    <span className="font-medium">₹30</span>
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between font-bold text-lg">
                     <span>Total</span>
-                    <span>Rs {subtotal + 50}</span>
+                    <span>₹ {subtotal + 30}</span>
                   </div>
                 </div>
                 <Button 

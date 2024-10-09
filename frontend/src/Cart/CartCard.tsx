@@ -40,6 +40,7 @@ const CartCard: React.FC<CartCardProps> = ({ info, updateQuantity, userId, setIt
       setItems((cur:any) => {
         return cur.filter((i:any) => i.id != id);
       })
+
     } catch (error) {
       console.error("Error deleting item from cart:", error);
     }
@@ -88,7 +89,7 @@ const CartCard: React.FC<CartCardProps> = ({ info, updateQuantity, userId, setIt
               <Plus className="w-4 h-4" />
             </Button>
           </div>
-          <div className="font-medium text-primary">Rs: {info.price * quantity}</div>
+          <div className="font-medium text-primary">Price : ₹{info.price * quantity}</div>
         </div>
       </CardContent>
       <CardFooter className="flex items-center justify-end gap-2">

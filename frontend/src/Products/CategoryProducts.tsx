@@ -7,10 +7,13 @@ import axios from "axios";
 import { BASEURL } from "../../BaseUrl";
 import Navbar from '../Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast'; 
+import { ToastAction } from '@/components/ui/toast';
+import { useToast } from '@/components/hooks/use-toast';
+
 
 export default function CategoryPage() {
   const navigate = useNavigate();
+  const { toast } = useToast()
   const { category } = useParams();
   const [products, setProducts] = useState([]);
 //   const [cart, setCart] = useState<any[]>([]); 
@@ -31,7 +34,8 @@ export default function CategoryPage() {
         name: product.name,
         price: product.price,
         imageUrl: product.imageUrl,
-        category: product.category
+        category: product.category,
+        id : product.id
       },
     });
   };
@@ -46,14 +50,23 @@ export default function CategoryPage() {
     return products.filter((product: any) => product.category.toLowerCase() === category.toLowerCase());
   }, [category, products]);
 
-  const handleAddToCart = (product: any) => {
-    // setCart((prevCart) => [...prevCart, product]);
-    toast.success(`${product.name} has been added to the cart!`);
-  };
+  const handleCart = async ({id, name}:any) => {
+    try {
+      await axios.post(`${BASEURL}/product/${id}/cart`,{},{withCredentials : true});
+      toast({
+        title: `${name}`,
+        description: "has been added to Cart.",
+        action: (
+          <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+        ),
+      })
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex flex-col">
-      <Toaster /> 
       <Navbar />
       <main className="flex-grow">
         <section className="py-16 bg-white">
@@ -103,7 +116,7 @@ export default function CategoryPage() {
                     </div>
                     <Button
                       className="w-full mt-4 bg-yellow-500 text-white hover:bg-yellow-600"
-                      onClick={() => handleAddToCart(product)}
+                      onClick={() => handleCart(product)}
                     >
                       Add to Cart
                       <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />

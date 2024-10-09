@@ -1,23 +1,28 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import Homepage from "./Home/Home";
 import Products from "./Products/Products";
 import ProductDivision from "./Products/CategoryProducts";
-import ClothsCard from "./Products/ClothsCard"; 
-import Cart from "./Products/Cart";
+import ClothsCard from "./Products/ProductDetials/ClothsCard"; 
+import Cart from "./Cart/Cart";
 import Login from "./Login/Login";
 import { useEffect } from "react";
 import axios from "axios";
 import { BASEURL } from "../BaseUrl";
 import useStore from "./store/userState";
 import { Loader2Icon } from "lucide-react";
-
+import Wishlist from "./Wishlist/Wishlist";
 
 const App = () => {
   const {login, loading, setloading} = useStore();
+  const navigate = useNavigate(); 
   useEffect(() => {
     (async () => {
-      const {data} = await axios.get(`${BASEURL}/usercheck`, {withCredentials : true});
-      login(data.user)
+      try {
+        const {data} = await axios.get(`${BASEURL}/usercheck`, {withCredentials : true});
+        login(data.user)
+      } catch(e) {
+        navigate("/")
+      }
       setloading();
     })();
   }, []);
@@ -35,6 +40,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/products" element={<Products />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/category/:category" element={<ProductDivision />} />
           <Route path="/product/:name" element={<ClothsCard />} />
         </Routes>

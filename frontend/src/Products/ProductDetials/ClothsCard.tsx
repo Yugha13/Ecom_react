@@ -1,18 +1,38 @@
 import { useLocation } from "react-router-dom";
-import { Label } from "../components/ui/label";
-import { RadioGroup, RadioGroupItem } from "../components/ui/radio-group";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../components/ui/select";
-import { Button } from "../components/ui/button";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { StarIcon } from "lucide-react";
 import ProductDetails from "./ElectroCard"; 
 import Navbar from "@/Navbar/Navbar";
+import { BASEURL } from "../../../BaseUrl";
+import axios from "axios";
+import { ToastAction } from "@radix-ui/react-toast";
+import { useToast } from "@/components/hooks/use-toast";
 
 
 export default function ClothsCard() {
   const location = useLocation();
-  const { name, price, imageUrl, category } = location.state || { name: "Product Name", price: "N/A", imageUrl: "/placeholder.svg", category: "other" };
-  // console.log(category);
-
+  const { toast } = useToast()
+  const { name = "Product Name", price = "N/A", imageUrl = "/placeholder.svg", category = "other", id = "" } = location.state || {};
+  if (!id) {
+    console.log("Product ID is missing from location state.");
+  }
+  const handleCart = async () => {    
+    try {
+      await axios.post(`${BASEURL}/product/${id}/cart`,{},{withCredentials : true});
+      toast({
+        title: `${name}`,
+        description: "has been added to Cart.",
+        action: (
+          <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+        ),
+      })
+    } catch (e) {
+      // console.log(e);
+    }
+  }
   if (category === "Clothes") {
     return (
       <div>
@@ -107,7 +127,13 @@ export default function ClothsCard() {
               </Select>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <Button size="lg">Add to cart</Button>
+              <Button 
+                className="bg-yellow-500 hover:bg-yellow-600"
+                size="lg"
+                onClick={handleCart}
+              >
+                Add to cart
+              </Button>
             </div>
           </form>
         </div>
@@ -117,7 +143,7 @@ export default function ClothsCard() {
   }
 
   if (category === "Electronics") {
-    return <ProductDetails info = {{name, price, imageUrl}} />;
+    return <ProductDetails info = {{name, price, imageUrl, id}} />;
   }
 
   return <ProductDetails hideLearnMore info = {{name, price, imageUrl}}/>;

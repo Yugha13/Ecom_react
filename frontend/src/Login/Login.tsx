@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import useUser from "@/store/userState";
 
 export default function Login() { 
-  const { data ,login } = useUser() as any
+  const { login } = useUser() as any
   const [isRegister, setIsRegister] = useState(false); 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
