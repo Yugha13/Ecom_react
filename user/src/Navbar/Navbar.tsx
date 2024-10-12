@@ -1,4 +1,4 @@
-import { Heart, LogOut, Mail, Search, ShoppingCart, User } from 'lucide-react';
+import { Heart, ListOrdered, LogOut, Mail, Search, ShoppingCart, User } from 'lucide-react';
 
 import {
   DropdownMenu,
@@ -68,6 +68,13 @@ const Navbar = () => {
                               
                               <Heart className="mr-2 h-4 w-4 fill-red-500 text-red-500" />
                               <span className='text-red-500'>Wishlist</span>
+                            </DropdownMenuItem>
+                              </Link>
+                              <Link to='/wishlist'>
+                            <DropdownMenuItem className="hover:bg-gray-100 transition-colors duration-300">
+                              
+                              <ListOrdered className="mr-2 h-4 w-4 fill-blue-500 text-blue-500" />
+                              <span className='text-blue-500'>Orders</span>
                             </DropdownMenuItem>
                               </Link>
                           </DropdownMenuGroup>

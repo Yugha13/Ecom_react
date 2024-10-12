@@ -11,6 +11,7 @@ import { BASEURL } from "../BaseUrl";
 import useStore from "./store/userState";
 import { Loader2Icon } from "lucide-react";
 import Wishlist from "./Wishlist/Wishlist";
+import Orders from "./Orders/Orders";
 
 const App = () => {
   const {login, loading, setloading} = useStore();
@@ -40,6 +41,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/products" element={<Products />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/orders" element={<Orders />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/category/:category" element={<ProductDivision />} />
           <Route path="/product/:name" element={<ClothsCard />} />

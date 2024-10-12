@@ -11,7 +11,7 @@ import { useToast } from "@/components/hooks/use-toast";
 
 
 export default function ElectronicsProductDetails({ hideLearnMore, info }: { hideLearnMore?: boolean, info:any }) {
-  const [showMore, setShowMore] = useState(true);
+  const [showMore, setShowMore] = useState(false);
   const { toast } = useToast()
   console.log("in electro - ", info);
   console.log(info.id);
