@@ -1,4 +1,4 @@
-import { HomeIcon, LineChartIcon, Package2Icon, PackageIcon, ShoppingCartIcon, UsersIcon } from "lucide-react";
+import { HomeIcon, Package2Icon, PackageIcon, ShoppingCartIcon, UsersIcon } from "lucide-react";
 import { Link, useLocation } from 'react-router-dom';
 
 const Sidebar = () => {
@@ -53,15 +53,7 @@ const Sidebar = () => {
                 <UsersIcon className="h-4 w-4" />
                 Customers
               </Link>
-              <Link
-                to="#"
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all  ${
-                  isActive("/analytics") ? "bg-primary text-primary-foreground" : "text-muted-foreground"
-                }`}
-              >
-                <LineChartIcon className="h-4 w-4" />
-                Analytics
-              </Link>
+              
             </nav>
           </div>
         </div>

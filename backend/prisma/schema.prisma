@@ -12,8 +12,10 @@ model User {
   email     String    @unique
   password  String
   name      String?
-  phone     String?  
-  address   String?
+  phone     String? 
+  pincode   String?
+  street    String?
+  state     String?
   orders    Order[]   
   wishlist  Wishlist?
   cart      Cart?    
@@ -28,6 +30,7 @@ model Product {
   price       String
   stock       String
   imageUrl    String?
+  quantity    String      @default("1")
   category    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -48,7 +51,9 @@ model Admin {
 model Order {
   id          String      @id @default(uuid())
   userId      String
-  totalAmount Float
+  totalAmount String
+  subtotal    String?
+  shipping    String      @default("30")
   status      OrderStatus @default(PENDING)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt

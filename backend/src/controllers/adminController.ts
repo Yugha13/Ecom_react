@@ -100,8 +100,39 @@ const allOrders = async (req : Request, res : Response) => {
     }
 }
 
+const orderStatus = async (req : Request, res : Response) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    // console.log(id, status);
+    try {
+        const order = await prisma.order.update({
+            where : { id },
+            data : { status }
+        });
+        return res.json({order});
+    } catch (e) {
+        return res.json("order code is wrong");
+    }
+}
 
-
+const specificOrder = async (req : Request, res : Response) => {
+    const { id } = req.params;
+    try {
+        const order = await prisma.order.findFirst({
+            where : {
+                id
+            },
+            include : {
+                user : true,
+                product : true
+            }
+        })
+        return res.json({order});
+    } catch (e) {
+        // console.log(e);
+        return res.status(404).json(e);
+    }
+}
 
 const users = async (req : Request, res : Response) => {
     try {
@@ -119,11 +150,11 @@ const users = async (req : Request, res : Response) => {
 }
 
 const specificUser = async (req : Request, res : Response) => {
-    const { userId } = req.body;
+    const { id } = req.params;
     try {
         const user = await prisma.user.findFirst({
             where : {
-                id : userId
+                id 
             },
             include : {
                 orders : true
@@ -163,7 +194,9 @@ export {
     updateproduct,
     deleteproduct,
     allOrders,
+    specificOrder,
     users,
     specificUser,
-    deleteUser
+    deleteUser,
+    orderStatus
 }

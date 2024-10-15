@@ -10,6 +10,11 @@ import Sidebar from "./Navbar/Sidebar";
 import Orders from "./Dashboard/Orders";
 import Products from "./Dashboard/Products";
 import Customers from "./Dashboard/Customers";
+import UserOrders from "./Dashboard/Cards/UserOrders";
+import UserCards from "./Dashboard/Cards/AllUsers";
+import UserDetails from "./Dashboard/Cards/ViewUser";
+
+
 
 
 const App = () => {
@@ -19,10 +24,8 @@ const App = () => {
   useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(`${BASEURL}/admincheck`, { withCredentials: true });
-        login(data.data);
-        // console.log("in app res - ",data.data);
-        
+        const data  = await axios.get(`${BASEURL}/admincheck`, { withCredentials: true });
+        login(data);
       } catch (e) {
         navigate("/");
       }
@@ -46,8 +49,11 @@ const App = () => {
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/order" element={<Orders />} />
+        <Route path="/order/:id" element={<UserOrders />} />
         <Route path="/products" element={<Products />} />
         <Route path="/customers" element={<Customers />} />
+        <Route path="/users" element={<UserCards />} />
+        <Route path="/user/:id" element={<UserDetails />} />
       </Routes>
     </div>
   );

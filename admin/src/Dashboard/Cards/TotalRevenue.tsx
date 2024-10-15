@@ -9,7 +9,7 @@ const TotalRevenue = () => {
     const fetchRealTimeData = (async () => {
         const { data } = await axios.get(`${BASEURL}/orders`, { withCredentials: true });
       
-        const totalSales = data.orders.reduce((acc: number, order: any) => acc + order.totalAmount, 0);
+        const totalSales = data.orders.reduce((acc: number, order: any) => acc + parseInt(order.totalAmount), 0);
       
         const currentDate = new Date();
         const firstDayCurrentMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
@@ -18,13 +18,13 @@ const TotalRevenue = () => {
       
         const currentMonthSales = data.orders
           .filter((order: any) => new Date(order.createdAt) >= firstDayCurrentMonth)
-          .reduce((acc: number, order: any) => acc + order.totalAmount, 0);
+          .reduce((acc: number, order: any) => acc + parseInt(order.totalAmount), 0);
       
         const lastMonthSales = data.orders
           .filter(
             (order: any) => new Date(order.createdAt) >= firstDayLastMonth && new Date(order.createdAt) <= lastDayLastMonth
           )
-          .reduce((acc: number, order: any) => acc + order.totalAmount, 0);
+          .reduce((acc: number, order: any) => acc + parseInt(order.totalAmount), 0);
       
         const salesPercentageChange = lastMonthSales === 0 ? 100 : ((currentMonthSales - lastMonthSales) / lastMonthSales) * 100;
       
@@ -46,7 +46,7 @@ const TotalRevenue = () => {
         <CardDescription>All revenue generated</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="text-4xl font-bold">₹{salesData.totalSales.toFixed(2)}</div>
+        <div className="text-4xl font-bold">₹{salesData.totalSales}</div>
       </CardContent>
       <CardFooter>
         <div className="flex items-center gap-2 text-muted-foreground">

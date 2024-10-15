@@ -9,9 +9,17 @@ import Navbar from "@/Navbar/Navbar";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { BASEURL } from "../../BaseUrl";
-import TotalOrders from "./Analysis/TotalOrders";
-import TotalRevenue from "./Analysis/TotalRevenue";
-import NewOrders from "./Analysis/NewOrders";
+import TotalOrders from "./Cards/TotalOrders";
+import TotalRevenue from "./Cards/TotalRevenue";
+import NewOrders from "./Cards/NewOrders";
+
+
+const statusColors = {
+  PENDING: "bg-gray-400 text-white hover:bg-gray-500",
+  SHIPPED: "bg-blue-400 text-white hover:bg-blue-500",
+  DELIVERED: "bg-green-400 text-white hover:bg-green-500",
+  CANCELLED: "bg-red-400 text-white hover:bg-red-500",
+};
 
 const OrdersCard = ({ info }: any) => {
   const isoDate = info.createdAt;
@@ -21,14 +29,16 @@ const OrdersCard = ({ info }: any) => {
   return (
     <TableRow>
       <TableCell className="font-medium">
-        <Link to="#" className="hover:underline">
+        <Link to={`/order/${info.id}`} className="hover:underline">
           #{info.id.slice(-3)}
         </Link>
       </TableCell>
       <TableCell>{info.user.name}</TableCell>
       <TableCell>{formattedDate}</TableCell>
       <TableCell>
-        <Badge variant="secondary">{info.status}</Badge>
+        <Badge className={statusColors[info.status as keyof typeof statusColors]}>
+          {info.status}
+        </Badge>
       </TableCell>
       <TableCell>₹{info.totalAmount}</TableCell>
       <TableCell>
@@ -40,8 +50,9 @@ const OrdersCard = ({ info }: any) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View</DropdownMenuItem>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <Link to={`/order/${info.id}`}>
+              <DropdownMenuItem>Update</DropdownMenuItem>
+            </Link>
             <DropdownMenuItem>Cancel</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -52,13 +63,21 @@ const OrdersCard = ({ info }: any) => {
 
 export default function Orders() {
   const [orderInfo, setOrderInfo] = useState<any[]>([]);
+  const [showAll, setShowAll] = useState<boolean>(false);
   const [sortField, setSortField] = useState<string>("createdAt");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   useEffect(() => {
     (async () => {
       const { data } = await axios.get(`${BASEURL}/orders`, { withCredentials: true });
-      setOrderInfo(data.orders);
+
+      const sortedOrders = [...data.orders].sort((a: any, b: any) => {
+        if (a.status === "pending" && b.status !== "pending") return -1;
+        if (a.status !== "pending" && b.status === "pending") return 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+
+      setOrderInfo(sortedOrders);
     })();
   }, []);
 
@@ -68,7 +87,6 @@ export default function Orders() {
     setSortDirection(direction);
     sortOrders(field, direction);
   };
-
 
   const sortOrders = (field: string, direction: "asc" | "desc") => {
     const sortedOrders = [...orderInfo].sort((a: any, b: any) => {
@@ -87,10 +105,9 @@ export default function Orders() {
     setOrderInfo(sortedOrders);
   };
 
-
   return (
     <div className="flex flex-col">
-      <Navbar />
+      <Navbar info="Orders" />
       <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 md:p-10">
         <TotalRevenue />
         <NewOrders />
@@ -98,8 +115,12 @@ export default function Orders() {
         <Card className="col-span-1 md:col-span-2 lg:col-span-3">
           <CardHeader className="flex items-center justify-between">
             <CardTitle className="text-lg font-medium">Recent Orders</CardTitle>
-            <Button variant="outline" size="sm">
-              View All Orders
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAll(!showAll)}
+            >
+              {showAll ? "Show Less" : "View All Orders"}
             </Button>
           </CardHeader>
           <CardContent>
@@ -125,7 +146,7 @@ export default function Orders() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {orderInfo.map((item: any) => (
+                {(showAll ? orderInfo : orderInfo.slice(0, 10)).map((item: any) => (
                   <OrdersCard key={item.id} info={item} />
                 ))}
               </TableBody>

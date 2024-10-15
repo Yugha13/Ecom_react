@@ -1,6 +1,6 @@
 import { RequestHandler, Router } from 'express'
 import adminMiddleware from '../middleware/adminMiddleware';
-import { allOrders, allproduct, createProduct, deleteproduct, deleteUser, login, specificUser, updateproduct, users } from '../controllers/adminController';
+import { allOrders, allproduct, createProduct, deleteproduct, deleteUser, login, orderStatus, specificOrder, specificUser, updateproduct, users } from '../controllers/adminController';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -18,14 +18,17 @@ adminRouter.put("/product/:id", updateproduct as any);
 adminRouter.delete("/product/:id", deleteproduct as any);
 
 adminRouter.get("/orders", allOrders as any );
+adminRouter.get("/order/:id", specificOrder as any );
+adminRouter.post("/editorder/:id", orderStatus as any );
 
 adminRouter.get("/users", users as any );
-adminRouter.post("/viewuser", specificUser as any );
+adminRouter.post("/user/:id", specificUser as any );
 adminRouter.post("/user/delete", deleteUser as any )
 
 const check = async ( req:any, res:any ) => {
-    const {id} = req.body;
-    const user = await prisma.user.findFirst({
+    const { id } = req.body;
+    
+    const user = await prisma.admin.findFirst({
         where : {
             id
         }
