@@ -70,13 +70,11 @@ export default function Orders() {
   useEffect(() => {
     (async () => {
       const { data } = await axios.get(`${BASEURL}/orders`, { withCredentials: true });
-
       const sortedOrders = [...data.orders].sort((a: any, b: any) => {
         if (a.status === "pending" && b.status !== "pending") return -1;
         if (a.status !== "pending" && b.status === "pending") return 1;
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
       });
-
       setOrderInfo(sortedOrders);
     })();
   }, []);

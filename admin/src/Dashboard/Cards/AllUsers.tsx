@@ -21,8 +21,8 @@ export default function UserCards() {
     })()
   },[])
   const handleDelete = async (id: any) => {
-    await axios.post(`${BASEURL}/user/delete`, { userId: id }, { withCredentials: true });
-    setUsers((prevUsers:any) => prevUsers.filter((user:any) => user.id !== id));
+    const data = await axios.get(`${BASEURL}/deleteuser/${id}`, { withCredentials: true });
+    console.log("in deleted - ",data);
   }
 
   return (

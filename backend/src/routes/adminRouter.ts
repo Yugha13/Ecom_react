@@ -23,7 +23,7 @@ adminRouter.post("/editorder/:id", orderStatus as any );
 
 adminRouter.get("/users", users as any );
 adminRouter.post("/user/:id", specificUser as any );
-adminRouter.post("/user/delete", deleteUser as any )
+adminRouter.get("/deleteuser/:id", deleteUser as any );
 
 const check = async ( req:any, res:any ) => {
     const { id } = req.body;

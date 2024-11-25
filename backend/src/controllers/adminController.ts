@@ -170,18 +170,18 @@ const specificUser = async (req : Request, res : Response) => {
 
 
 const deleteUser = async (req : Request, res : Response) => {
-    const { userId } = req.body;
-    // console.log(userId);
+    const { userId } = req.params;
+    console.log(userId);
     try {
         const user = await prisma.user.delete({
             where : {
                 id : userId
             }
         })
-        // console.log(user);
+        console.log(user);
         return res.json("user deleted");
     } catch (e) {
-        // console.log(e);
+        console.log(e);
         return res.status(404).json(e);
     }
 }

@@ -51,7 +51,7 @@ const PieChart = () => {
                 innerRadius={0.5}
                 padAngle={0.7}
                 cornerRadius={3}
-                colors={['#2563eb', '#e11d48', '#10b981', '#f59e0b', '#e11d48', '#2563eb']}
+                colors={['#ADD8E6', '#C0C0C0', '#FFC0CB', '#808080', '#5CB3FF', '#E3E4FA', '#7C9D8E','#848B79', '#B8BC86', '#FFFACD']}
                 borderWidth={1}
                 borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
                 enableArcLinkLabels={false}
